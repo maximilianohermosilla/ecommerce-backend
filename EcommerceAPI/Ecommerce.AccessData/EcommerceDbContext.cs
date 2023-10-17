@@ -1,14 +1,13 @@
 ﻿using Ecommerce.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Ecommerce.AccessData
 {
     public class EcommerceDbContext : DbContext
     {
-        public EcommerceDbContext(DbContextOptions<EcommerceDbContext> options)
-        : base(options)
+        public EcommerceDbContext(DbContextOptions options): base(options)
         {
+
         }
 
         public DbSet<Caracteristica> Caracteristica { get; set; }
@@ -36,24 +35,18 @@ namespace Ecommerce.AccessData
         public DbSet<TipoFormaPago> TipoFormaPago { get; set; }
         public DbSet<Usuario> Usuario { get; set; }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder.UseSqlServer("Server=localhost; Database=Ecommerce; Trusted_Connection=True; TrustServerCertificate=True");
-        //    //optionsBuilder.UseSqlServer("Server=SQL5097.site4now.net;Database=Ecommerce;User Id=db_a934ba_mayibeercollection_admin;Password=Caslacapo1908**");
-        //}
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Caracteristica>(entity =>
             {
                 entity.Property(e => e.Descripcion).HasMaxLength(100).IsRequired();
-                entity.HasOne(d => d.TipoCaracteristica).WithMany(p => p.Caracteristicas).HasForeignKey(d => d.IdTipoCaracteristica);
+                entity.HasOne(d => d.TipoCaracteristica).WithMany(p => p.Caracteristicas).HasForeignKey(d => d.IdTipoCaracteristica).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<Carrito>(entity =>
             {
-                entity.HasOne(d => d.ProductoDetalle).WithMany(p => p.Carritos).HasForeignKey(d => d.IdProductoDetalle);
-                entity.HasOne(d => d.Usuario).WithMany(p => p.Carritos).HasForeignKey(d => d.IdUsuario);
+                entity.HasOne(d => d.ProductoDetalle).WithMany(p => p.Carritos).HasForeignKey(d => d.IdProductoDetalle).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.Usuario).WithMany(p => p.Carritos).HasForeignKey(d => d.IdUsuario).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<CategoriaProducto>(entity =>
@@ -71,7 +64,7 @@ namespace Ecommerce.AccessData
                 entity.Property(e => e.Provincia).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.Localidad).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.Municipio).HasMaxLength(100).IsRequired();
-                entity.HasOne(d => d.Usuario).WithMany(p => p.Direcciones).HasForeignKey(d => d.IdUsuario);
+                entity.HasOne(d => d.Usuario).WithMany(p => p.Direcciones).HasForeignKey(d => d.IdUsuario).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<Empresa>(entity =>
@@ -86,8 +79,8 @@ namespace Ecommerce.AccessData
 
             modelBuilder.Entity<EstadoPedido>(entity =>
             {
-                entity.HasOne(d => d.Estado).WithMany(p => p.EstadoPedidos).HasForeignKey(d => d.IdEstado);
-                entity.HasOne(d => d.Pedido).WithMany(p => p.EstadoPedidos).HasForeignKey(d => d.IdPedido);
+                entity.HasOne(d => d.Estado).WithMany(p => p.EstadoPedidos).HasForeignKey(d => d.IdEstado).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.Pedido).WithMany(p => p.EstadoPedidos).HasForeignKey(d => d.IdPedido).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<FormaEntrega>(entity =>
@@ -100,36 +93,36 @@ namespace Ecommerce.AccessData
                 entity.Property(e => e.Entidad).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.Numero).HasMaxLength(50).IsRequired();
                 entity.Property(e => e.Expiracion).HasMaxLength(5).IsRequired();
-                entity.HasOne(d => d.Usuario).WithMany(p => p.FormaPagos).HasForeignKey(d => d.IdUsuario);
-                entity.HasOne(d => d.TipoFormaPago).WithMany(p => p.FormaPagos).HasForeignKey(d => d.IdTipoFormaPago);
+                entity.HasOne(d => d.Usuario).WithMany(p => p.FormaPagos).HasForeignKey(d => d.IdUsuario).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.TipoFormaPago).WithMany(p => p.FormaPagos).HasForeignKey(d => d.IdTipoFormaPago).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<ImagenProducto>(entity =>
             {
                 entity.Property(e => e.NombreArchivo).HasMaxLength(250);                
-                entity.HasOne(d => d.Producto).WithMany(p => p.ImagenProductos).HasForeignKey(d => d.IdProducto);
+                entity.HasOne(d => d.Producto).WithMany(p => p.ImagenProductos).HasForeignKey(d => d.IdProducto).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<Opinion>(entity =>
             {
-                entity.HasOne(d => d.Usuario).WithMany(p => p.Opiniones).HasForeignKey(d => d.IdUsuario);
-                entity.HasOne(d => d.Producto).WithMany(p => p.Opiniones).HasForeignKey(d => d.IdProducto);
+                entity.HasOne(d => d.Usuario).WithMany(p => p.Opiniones).HasForeignKey(d => d.IdUsuario).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.Producto).WithMany(p => p.Opiniones).HasForeignKey(d => d.IdProducto).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<Pedido>(entity =>
             {
                 entity.Property(e => e.PrecioTotal).HasColumnType("numeric(25,2)");
-                entity.HasOne(d => d.Estado).WithMany(p => p.Pedidos).HasForeignKey(d => d.IdEstado);
-                entity.HasOne(d => d.FormaEntrega).WithMany(p => p.Pedidos).HasForeignKey(d => d.IdFormaEntrega);
-                entity.HasOne(d => d.FormaPago).WithMany(p => p.Pedidos).HasForeignKey(d => d.IdFormaPago);
-                entity.HasOne(d => d.Usuario).WithMany(p => p.Pedidos).HasForeignKey(d => d.IdUsuario);
-                entity.HasOne(d => d.Direccion).WithMany(p => p.Pedidos).HasForeignKey(d => d.IdDireccion);
+                entity.HasOne(d => d.Estado).WithMany(p => p.Pedidos).HasForeignKey(d => d.IdEstado).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.FormaEntrega).WithMany(p => p.Pedidos).HasForeignKey(d => d.IdFormaEntrega).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.FormaPago).WithMany(p => p.Pedidos).HasForeignKey(d => d.IdFormaPago).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.Usuario).WithMany(p => p.Pedidos).HasForeignKey(d => d.IdUsuario).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.Direccion).WithMany(p => p.Pedidos).HasForeignKey(d => d.IdDireccion).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<PedidoDetalle>(entity =>
             {
-                entity.HasOne(d => d.ProductoDetalle).WithMany(p => p.PedidoDetalles).HasForeignKey(d => d.IdProductoDetalle);
-                entity.HasOne(d => d.Pedido).WithMany(p => p.PedidoDetalles).HasForeignKey(d => d.IdPedido);
+                entity.HasOne(d => d.ProductoDetalle).WithMany(p => p.PedidoDetalles).HasForeignKey(d => d.IdProductoDetalle).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.Pedido).WithMany(p => p.PedidoDetalles).HasForeignKey(d => d.IdPedido).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<Perfil>(entity =>
@@ -141,20 +134,20 @@ namespace Ecommerce.AccessData
             {
                 entity.Property(e => e.Nombre).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.Precio).HasColumnType("numeric(25,2)");
-                entity.HasOne(d => d.CategoriaProducto).WithMany(p => p.Productos).HasForeignKey(d => d.IdCategoriaProducto);
+                entity.HasOne(d => d.CategoriaProducto).WithMany(p => p.Productos).HasForeignKey(d => d.IdCategoriaProducto).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<ProductoCaracteristica>(entity =>
             {
-                entity.HasOne(d => d.ProductoDetalle).WithMany(p => p.ProductoCaracteristicas).HasForeignKey(d => d.IdProductoDetalle);
-                entity.HasOne(d => d.Caracteristica).WithMany(p => p.ProductoCaracteristicas).HasForeignKey(d => d.IdCaracteristica);
+                entity.HasOne(d => d.ProductoDetalle).WithMany(p => p.ProductoCaracteristicas).HasForeignKey(d => d.IdProductoDetalle).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.Caracteristica).WithMany(p => p.ProductoCaracteristicas).HasForeignKey(d => d.IdCaracteristica).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<ProductoDetalle>(entity =>
             {
                 entity.Property(e => e.Precio).HasColumnType("numeric(25,2)");
-                entity.HasOne(d => d.Producto).WithMany(p => p.ProductoDetalles).HasForeignKey(d => d.IdProducto);
-                entity.HasOne(d => d.Empresa).WithMany(p => p.ProductoDetalles).HasForeignKey(d => d.IdEmpresa);
+                entity.HasOne(d => d.Producto).WithMany(p => p.ProductoDetalles).HasForeignKey(d => d.IdProducto).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.Empresa).WithMany(p => p.ProductoDetalles).HasForeignKey(d => d.IdEmpresa).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<Promocion>(entity =>
@@ -165,22 +158,22 @@ namespace Ecommerce.AccessData
             modelBuilder.Entity<PromocionCategoria>(entity =>
             {
                 entity.Property(e => e.Descripcion).HasMaxLength(100);
-                entity.HasOne(d => d.CategoriaProducto).WithMany(p => p.PromocionCategorias).HasForeignKey(d => d.IdCategoriaProducto);
-                entity.HasOne(d => d.Promocion).WithMany(p => p.PromocionCategorias).HasForeignKey(d => d.IdPromocion);
-                entity.HasOne(d => d.Empresa).WithMany(p => p.PromocionCategorias).HasForeignKey(d => d.IdEmpresa);
+                entity.HasOne(d => d.CategoriaProducto).WithMany(p => p.PromocionCategorias).HasForeignKey(d => d.IdCategoriaProducto).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.Promocion).WithMany(p => p.PromocionCategorias).HasForeignKey(d => d.IdPromocion).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.Empresa).WithMany(p => p.PromocionCategorias).HasForeignKey(d => d.IdEmpresa).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<PromocionProducto>(entity =>
             {
                 entity.Property(e => e.Descripcion).HasMaxLength(100);
-                entity.HasOne(d => d.Producto).WithMany(p => p.PromocionProductos).HasForeignKey(d => d.IdProducto);
-                entity.HasOne(d => d.Promocion).WithMany(p => p.PromocionProductos).HasForeignKey(d => d.IdPromocion);
+                entity.HasOne(d => d.Producto).WithMany(p => p.PromocionProductos).HasForeignKey(d => d.IdProducto).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.Promocion).WithMany(p => p.PromocionProductos).HasForeignKey(d => d.IdPromocion).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<TipoCaracteristica>(entity =>
             {
                 entity.Property(e => e.Descripcion).HasMaxLength(100).IsRequired();
-                entity.HasOne(d => d.CategoriaProducto).WithMany(p => p.TipoCaracteristicas).HasForeignKey(d => d.IdCategoriaProducto);
+                entity.HasOne(d => d.CategoriaProducto).WithMany(p => p.TipoCaracteristicas).HasForeignKey(d => d.IdCategoriaProducto).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<TipoFormaPago>(entity =>
@@ -199,8 +192,8 @@ namespace Ecommerce.AccessData
                 entity.Property(e => e.TelefonoPrincipal).HasMaxLength(100);
                 entity.Property(e => e.TelefonoPrincipal).HasMaxLength(100);
                 entity.Property(e => e.Imagen).HasMaxLength(5000);
-                entity.HasOne(d => d.Perfil).WithMany(p => p.Usuarios).HasForeignKey(d => d.IdPerfil);
-                entity.HasOne(d => d.Empresa).WithMany(p => p.Usuarios).HasForeignKey(d => d.IdEmpresa);
+                entity.HasOne(d => d.Perfil).WithMany(p => p.Usuarios).HasForeignKey(d => d.IdPerfil).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.Empresa).WithMany(p => p.Usuarios).HasForeignKey(d => d.IdEmpresa).OnDelete(DeleteBehavior.NoAction);
             });
         }
     }
