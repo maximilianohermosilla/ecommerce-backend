@@ -7,8 +7,10 @@
         public float Precio { get; set; }
         public float Descuento { get; set; }
         public float PrecioFinal { get; set; }
-
-        public virtual ProductoDetalle IdProductoDetalle { get; set; }
-        public virtual Promocion IdPromocion { get; set; }
+        public int IdProductoDetalle { get; set; }
+        public int IdPedido { get; set; }
+        
+        public virtual ProductoDetalle ProductoDetalle { get; set; }
+        public virtual Pedido Pedido { get; set; }
     }
 }
