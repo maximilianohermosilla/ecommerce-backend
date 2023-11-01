@@ -4,24 +4,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.AccessData.Queries
 {
-    public class EmpresaQuery : IEmpresaQuery
+    public class FormaEntregaQuery : IFormaEntregaQuery
     {
         private EcommerceDbContext _context;
 
-        public EmpresaQuery(EcommerceDbContext context)
+        public FormaEntregaQuery(EcommerceDbContext context)
         {
             _context = context;
         }
 
-        public async Task<List<Empresa>> GetAll()
+        public async Task<List<FormaEntrega>> GetAll()
         {
-            var lista = await _context.Empresa.ToListAsync();
+            var lista = await _context.FormaEntrega.ToListAsync();
             return lista;
         }
 
-        public async Task<Empresa?> GetById(int id)
+        public async Task<FormaEntrega?> GetById(int id)
         {
-            var element = await _context.Empresa.Where(p => p.Id == id).FirstOrDefaultAsync();
+            var element = await _context.FormaEntrega.Where(p => p.Id == id).FirstOrDefaultAsync();
             return element;
         }
     }
