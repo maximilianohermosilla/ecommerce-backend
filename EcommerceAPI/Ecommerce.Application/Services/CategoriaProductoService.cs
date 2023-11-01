@@ -7,31 +7,31 @@ using Ecommerce.Domain.Entities;
 
 namespace Ecommerce.Application.Services
 {
-    public class EmpresaService: IEmpresaService
+    public class CategoriaProductoService: ICategoriaProductoService
     {
-        private readonly IEmpresaQuery _empresaQuery;
-        private readonly IEmpresaCommand _empresaCommand;
+        private readonly ICategoriaProductoQuery _categoriaProductoQuery;
+        private readonly ICategoriaProductoCommand _categoriaProductoCommand;
         private readonly IMapper _mapper;
 
-        public EmpresaService(IEmpresaQuery empresaQuery, IEmpresaCommand empresaCommand, IMapper mapper)
+        public CategoriaProductoService(ICategoriaProductoQuery categoriaProductoQuery, ICategoriaProductoCommand categoriaProductoCommand, IMapper mapper)
         {
-            _empresaQuery = empresaQuery;
-            _empresaCommand = empresaCommand;
+            _categoriaProductoQuery = categoriaProductoQuery;
+            _categoriaProductoCommand = categoriaProductoCommand;
             _mapper = mapper;
         }
 
         public async Task<ResponseModel> Delete(int id)
         {
             ResponseModel response = new ResponseModel();
-            EmpresaResponse empresaResponse = new EmpresaResponse();
+            CategoriaProductoResponse categoriaProductoResponse = new CategoriaProductoResponse();
             try
             {
-                var estilo = await _empresaQuery.GetById(id);
+                var estilo = await _categoriaProductoQuery.GetById(id);
 
                 if (estilo == null)
                 {
                     response.statusCode = 404;
-                    response.message = "La empresa seleccionada no existe";
+                    response.message = "La categoria seleccionada no existe";
                     response.response = null;
                     return response;
                 }
@@ -46,8 +46,8 @@ namespace Ecommerce.Application.Services
                 //    return response;
                 //}
 
-                await _empresaCommand.Delete(estilo);
-                empresaResponse = _mapper.Map<EmpresaResponse>(estilo);
+                await _categoriaProductoCommand.Delete(estilo);
+                categoriaProductoResponse = _mapper.Map<CategoriaProductoResponse>(estilo);
 
                 //_logger.LogInformation("Se eliminó el estilo: " + id + ", " + estilo.Nombre);
             }
@@ -59,8 +59,8 @@ namespace Ecommerce.Application.Services
             }
 
             response.statusCode = 200;
-            response.message = "Empresa eliminada exitosamente";
-            response.response = empresaResponse;
+            response.message = "Categoria eliminada exitosamente";
+            response.response = categoriaProductoResponse;
             return response;
         }
 
@@ -70,8 +70,8 @@ namespace Ecommerce.Application.Services
 
             try
             {
-                List<Empresa> lista = await _empresaQuery.GetAll();
-                List<EmpresaResponse> listaDTO = _mapper.Map<List<EmpresaResponse>>(lista);
+                List<CategoriaProducto> lista = await _categoriaProductoQuery.GetAll();
+                List<CategoriaProductoResponse> listaDTO = _mapper.Map<List<CategoriaProductoResponse>>(lista);
 
                 response.message = "Consulta realizada correctamente";
                 response.statusCode = 200;
@@ -93,21 +93,21 @@ namespace Ecommerce.Application.Services
 
             try
             {
-                Empresa empresa = await _empresaQuery.GetById(id);
+                CategoriaProducto categoriaProducto = await _categoriaProductoQuery.GetById(id);
 
-                if (empresa == null)
+                if (categoriaProducto == null)
                 {
                     response.statusCode = 404;
-                    response.message = "La empresa seleccionada no existe";
+                    response.message = "La categoria seleccionada no existe";
                     response.response = null;
                     return response;
                 }
 
-                EmpresaResponse empresaResponse = _mapper.Map<EmpresaResponse>(empresa);
+                CategoriaProductoResponse categoriaProductoResponse = _mapper.Map<CategoriaProductoResponse>(categoriaProducto);
 
                 response.message = "Consulta realizada correctamente";
                 response.statusCode = 200;
-                response.response = empresaResponse;
+                response.response = categoriaProductoResponse;
             }
             catch (Exception ex)
             {
@@ -119,18 +119,18 @@ namespace Ecommerce.Application.Services
             return response;
         }
 
-        public async Task<ResponseModel> Insert(EmpresaRequest element)
+        public async Task<ResponseModel> Insert(CategoriaProductoRequest element)
         {
 
             ResponseModel response = new ResponseModel();
-            EmpresaResponse empresaResponse = new EmpresaResponse();
+            CategoriaProductoResponse categoriaProductoResponse = new CategoriaProductoResponse();
             try
             {
-                Empresa empresa = _mapper.Map<Empresa>(element);
-                empresa = await _empresaCommand.Insert(empresa);
-                empresaResponse = _mapper.Map<EmpresaResponse>(empresa);
+                CategoriaProducto categoriaProducto = _mapper.Map<CategoriaProducto>(element);
+                categoriaProducto = await _categoriaProductoCommand.Insert(categoriaProducto);
+                categoriaProductoResponse = _mapper.Map<CategoriaProductoResponse>(categoriaProducto);
 
-                //_logger.LogInformation("Se insertó un nuevo empresa: " + empresa.Id + ". Nombre: " + empresa.Nombre);
+                //_logger.LogInformation("Se insertó un nuevo categoriaProducto: " + categoriaProducto.Id + ". Nombre: " + categoriaProducto.Nombre);
             }
             catch (Exception ex)
             {
@@ -141,34 +141,34 @@ namespace Ecommerce.Application.Services
             }
 
             response.statusCode = 201;
-            response.message = "Empresa insertada exitosamente";
-            response.response = empresaResponse;
+            response.message = "Categoria insertada exitosamente";
+            response.response = categoriaProductoResponse;
             return response;
         }
 
-        public async Task<ResponseModel> Update(EmpresaRequest element)
+        public async Task<ResponseModel> Update(CategoriaProductoRequest element)
         {
             ResponseModel response = new ResponseModel();
-            EmpresaResponse empresaResponse = new EmpresaResponse();
+            CategoriaProductoResponse categoriaProductoResponse = new CategoriaProductoResponse();
             try
             {
-                var empresa = await _empresaQuery.GetById(element.Id);
+                var categoriaProducto = await _categoriaProductoQuery.GetById(element.Id);
 
-                if (empresa == null)
+                if (categoriaProducto == null)
                 {
                     response.statusCode = 404;
-                    response.message = "La empresa seleccionado no existe";
+                    response.message = "La categoria seleccionado no existe";
                     response.response = null;
                     return response;
                 }
 
-                empresa.Descripcion = element.Descripcion;
-                empresa.Habilitado = element.Habilitado;
+                categoriaProducto.Descripcion = element.Descripcion;
+                categoriaProducto.Habilitado = element.Habilitado;
 
-                await _empresaCommand.Update(empresa);
-                empresaResponse = _mapper.Map<EmpresaResponse>(empresa);
+                await _categoriaProductoCommand.Update(categoriaProducto);
+                categoriaProductoResponse = _mapper.Map<CategoriaProductoResponse>(categoriaProducto);
 
-                //_logger.LogInformation("Se actualizó la empresa: " + empresa.Id + ". Nombre anterior: " + empresa.Nombre + ". Nombre actual: " + entity.Nombre);
+                //_logger.LogInformation("Se actualizó la categoriaProducto: " + categoriaProducto.Id + ". Nombre anterior: " + categoriaProducto.Nombre + ". Nombre actual: " + entity.Nombre);
             }
             catch (Exception ex)
             {
@@ -179,8 +179,8 @@ namespace Ecommerce.Application.Services
             }
 
             response.statusCode = 200;
-            response.message = "Empresa actualizada exitosamente";
-            response.response = empresaResponse;
+            response.message = "Categoria actualizada exitosamente";
+            response.response = categoriaProductoResponse;
             return response;
         }
     }

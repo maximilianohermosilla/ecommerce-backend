@@ -1,7 +1,6 @@
 ﻿using Ecommerce.Application.Models;
-using Ecommerce.Domain.Entities;
 
-namespace Ecommerce.Application.Interfaces.IQueries
+namespace Ecommerce.Application.Interfaces.IServices
 {
     public interface IEmpresaService
     { 

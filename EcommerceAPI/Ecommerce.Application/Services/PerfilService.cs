@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Ecommerce.Application.Interfaces.ICommands;
 using Ecommerce.Application.Interfaces.IQueries;
+using Ecommerce.Application.Interfaces.IServices;
 using Ecommerce.Application.Models;
 using Ecommerce.Domain.Entities;
 

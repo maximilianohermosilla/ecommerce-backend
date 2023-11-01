@@ -7,11 +7,11 @@ namespace EcommerceAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PerfilController : ControllerBase
+    public class ParametroController : ControllerBase
     {
-        private readonly IPerfilService _service;
+        private readonly IParametroService _service;
 
-        public PerfilController(IPerfilService service)
+        public ParametroController(IParametroService service)
         {
             _service = service;
         }
@@ -41,11 +41,11 @@ namespace EcommerceAPI.Controllers
         }
 
         [HttpGet("Id")]
-        public async Task<IActionResult> GetById(int Id)
+        public async Task<IActionResult> GetByKey(string clave)
         {
             try
             {
-                var response = await _service.GetById(Id);
+                var response = await _service.GetByKey(clave);
 
                 if (response.statusCode == 400)
                 {
@@ -66,20 +66,20 @@ namespace EcommerceAPI.Controllers
 
         [HttpPost]
         //[Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Insert(PerfilRequest request)
+        public async Task<IActionResult> Insert(ParametroRequest request)
         {
             try
             {
-                if (request.Descripcion == "")
+                if (request.Clave == "")
                 {
-                    return BadRequest(new BadRequest { message = "El nombre del perfil no puede estar vacío" });
+                    return BadRequest(new BadRequest { message = "El nombre del parametro no puede estar vacío" });
                 }
 
                 var response = await _service.Insert(request);
 
                 if (response.response == null)
                 {
-                    return BadRequest(new BadRequest { message = "Ocurrió un error al insertar el perfil. Revise los valores ingresados" });
+                    return BadRequest(new BadRequest { message = "Ocurrió un error al insertar el parametro. Revise los valores ingresados" });
                 }
 
                 return Created("", response.response);
@@ -93,25 +93,25 @@ namespace EcommerceAPI.Controllers
 
         [HttpPut]
         //[Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Update(PerfilRequest request)
+        public async Task<IActionResult> Update(ParametroRequest request)
         {
             try
             {
-                if (request.Descripcion != "")
+                if (request.Clave != "")
                 {
                     var response = await _service.Update(request);
                     if (response != null && response.response != null)
                     {
-                        return new JsonResult(new { Message = "Se ha actualizado el perfil exitosamente.", Response = response }) { StatusCode = 200 };
+                        return new JsonResult(new { Message = "Se ha actualizado el parametro exitosamente.", Response = response }) { StatusCode = 200 };
                     }
                     else
                     {
-                        return new JsonResult(new { Message = "No se pudo actualizar el perfil" }) { StatusCode = 400 };
+                        return new JsonResult(new { Message = "No se pudo actualizar el parametro" }) { StatusCode = 400 };
                     }
                 }
                 else
                 {
-                    return new JsonResult(new { Message = "El nombre del perfil no puede estar vacío" }) { StatusCode = 400 };
+                    return new JsonResult(new { Message = "El nombre del parametro no puede estar vacío" }) { StatusCode = 400 };
                 }
             }
             catch (Exception ex)
@@ -130,7 +130,7 @@ namespace EcommerceAPI.Controllers
 
                 if (response != null && response.response != null)
                 {
-                    return Ok(new { Message = "Se ha eliminado el perfil exitosamente.", Response = response });
+                    return Ok(new { Message = "Se ha eliminado el parametro exitosamente.", Response = response });
                 }
 
                 if (response != null && response.statusCode >= 400 && response.statusCode < 500)
@@ -138,7 +138,7 @@ namespace EcommerceAPI.Controllers
                     return BadRequest(new BadRequest { message = response.message });
                 }
 
-                return new JsonResult(new { Message = "No se encuentra el perfil" }) { StatusCode = 404 };
+                return new JsonResult(new { Message = "No se encuentra el parametro" }) { StatusCode = 404 };
             }
             catch (Exception ex)
             {

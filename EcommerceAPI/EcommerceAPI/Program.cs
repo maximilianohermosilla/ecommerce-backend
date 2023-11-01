@@ -4,6 +4,7 @@ using Ecommerce.AccessData.Commands;
 using Ecommerce.AccessData.Queries;
 using Ecommerce.Application.Interfaces.ICommands;
 using Ecommerce.Application.Interfaces.IQueries;
+using Ecommerce.Application.Interfaces.IServices;
 using Ecommerce.Application.Services;
 using EcommerceAPI.Helpers;
 using Microsoft.EntityFrameworkCore;

@@ -2,12 +2,12 @@
 
 namespace Ecommerce.Application.Interfaces.IServices
 {
-    public interface IPerfilService
+    public interface IEstadoService
     { 
         Task<ResponseModel> GetAll();
         Task<ResponseModel> GetById(int id);
-        Task<ResponseModel> Insert(PerfilRequest element);
-        Task<ResponseModel> Update(PerfilRequest element);
+        Task<ResponseModel> Insert(EstadoRequest element);
+        Task<ResponseModel> Update(EstadoRequest element);
         Task<ResponseModel> Delete(int id);
     }
 }

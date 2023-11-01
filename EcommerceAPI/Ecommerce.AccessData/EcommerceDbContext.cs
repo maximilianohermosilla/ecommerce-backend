@@ -195,6 +195,14 @@ namespace Ecommerce.AccessData
                 entity.HasOne(d => d.Perfil).WithMany(p => p.Usuarios).HasForeignKey(d => d.IdPerfil).OnDelete(DeleteBehavior.NoAction);
                 entity.HasOne(d => d.Empresa).WithMany(p => p.Usuarios).HasForeignKey(d => d.IdEmpresa).OnDelete(DeleteBehavior.NoAction);
             });
+
+            modelBuilder.Entity<TipoFormaPago>().HasData(
+                new TipoFormaPago { Id = 1, Descripcion = "Efectivo" },
+                new TipoFormaPago { Id = 2, Descripcion = "Tarjeta de Crédito" },
+                new TipoFormaPago { Id = 3, Descripcion = "Tarjeta de Débito" },
+                new TipoFormaPago { Id = 4, Descripcion = "MercadoPago" },
+                new TipoFormaPago { Id = 4, Descripcion = "Transferencia" }
+            );
         }
     }
 }

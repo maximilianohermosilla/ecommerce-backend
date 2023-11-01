@@ -7,31 +7,31 @@ using Ecommerce.Domain.Entities;
 
 namespace Ecommerce.Application.Services
 {
-    public class EmpresaService: IEmpresaService
+    public class EstadoService: IEstadoService
     {
-        private readonly IEmpresaQuery _empresaQuery;
-        private readonly IEmpresaCommand _empresaCommand;
+        private readonly IEstadoQuery _estadoQuery;
+        private readonly IEstadoCommand _estadoCommand;
         private readonly IMapper _mapper;
 
-        public EmpresaService(IEmpresaQuery empresaQuery, IEmpresaCommand empresaCommand, IMapper mapper)
+        public EstadoService(IEstadoQuery estadoQuery, IEstadoCommand estadoCommand, IMapper mapper)
         {
-            _empresaQuery = empresaQuery;
-            _empresaCommand = empresaCommand;
-            _mapper = mapper;
+            _estadoQuery = estadoQuery;
+            _estadoCommand = estadoCommand;
+            _mapper = mapper;            
         }
 
         public async Task<ResponseModel> Delete(int id)
         {
             ResponseModel response = new ResponseModel();
-            EmpresaResponse empresaResponse = new EmpresaResponse();
+            EstadoResponse estadoResponse = new EstadoResponse();
             try
             {
-                var estilo = await _empresaQuery.GetById(id);
+                var estilo = await _estadoQuery.GetById(id);
 
                 if (estilo == null)
                 {
                     response.statusCode = 404;
-                    response.message = "La empresa seleccionada no existe";
+                    response.message = "El estado seleccionado no existe";
                     response.response = null;
                     return response;
                 }
@@ -46,8 +46,8 @@ namespace Ecommerce.Application.Services
                 //    return response;
                 //}
 
-                await _empresaCommand.Delete(estilo);
-                empresaResponse = _mapper.Map<EmpresaResponse>(estilo);
+                await _estadoCommand.Delete(estilo);
+                estadoResponse = _mapper.Map<EstadoResponse>(estilo);
 
                 //_logger.LogInformation("Se eliminó el estilo: " + id + ", " + estilo.Nombre);
             }
@@ -59,8 +59,8 @@ namespace Ecommerce.Application.Services
             }
 
             response.statusCode = 200;
-            response.message = "Empresa eliminada exitosamente";
-            response.response = empresaResponse;
+            response.message = "Estado eliminado exitosamente";
+            response.response = estadoResponse;
             return response;
         }
 
@@ -70,8 +70,8 @@ namespace Ecommerce.Application.Services
 
             try
             {
-                List<Empresa> lista = await _empresaQuery.GetAll();
-                List<EmpresaResponse> listaDTO = _mapper.Map<List<EmpresaResponse>>(lista);
+                List<Estado> lista = await _estadoQuery.GetAll();
+                List<EstadoResponse> listaDTO = _mapper.Map<List<EstadoResponse>>(lista);
 
                 response.message = "Consulta realizada correctamente";
                 response.statusCode = 200;
@@ -93,21 +93,21 @@ namespace Ecommerce.Application.Services
 
             try
             {
-                Empresa empresa = await _empresaQuery.GetById(id);
+                Estado estado = await _estadoQuery.GetById(id);
 
-                if (empresa == null)
+                if (estado == null)
                 {
                     response.statusCode = 404;
-                    response.message = "La empresa seleccionada no existe";
+                    response.message = "El estado seleccionado no existe";
                     response.response = null;
                     return response;
                 }
 
-                EmpresaResponse empresaResponse = _mapper.Map<EmpresaResponse>(empresa);
+                EstadoResponse estadoResponse = _mapper.Map<EstadoResponse>(estado);
 
                 response.message = "Consulta realizada correctamente";
                 response.statusCode = 200;
-                response.response = empresaResponse;
+                response.response = estadoResponse;
             }
             catch (Exception ex)
             {
@@ -119,18 +119,18 @@ namespace Ecommerce.Application.Services
             return response;
         }
 
-        public async Task<ResponseModel> Insert(EmpresaRequest element)
+        public async Task<ResponseModel> Insert(EstadoRequest element)
         {
 
             ResponseModel response = new ResponseModel();
-            EmpresaResponse empresaResponse = new EmpresaResponse();
+            EstadoResponse estadoResponse = new EstadoResponse();
             try
             {
-                Empresa empresa = _mapper.Map<Empresa>(element);
-                empresa = await _empresaCommand.Insert(empresa);
-                empresaResponse = _mapper.Map<EmpresaResponse>(empresa);
+                Estado estado = _mapper.Map<Estado>(element);
+                estado = await _estadoCommand.Insert(estado);
+                estadoResponse = _mapper.Map<EstadoResponse>(estado);
 
-                //_logger.LogInformation("Se insertó un nuevo empresa: " + empresa.Id + ". Nombre: " + empresa.Nombre);
+                //_logger.LogInformation("Se insertó un nuevo estado: " + estado.Id + ". Nombre: " + estado.Nombre);
             }
             catch (Exception ex)
             {
@@ -141,34 +141,33 @@ namespace Ecommerce.Application.Services
             }
 
             response.statusCode = 201;
-            response.message = "Empresa insertada exitosamente";
-            response.response = empresaResponse;
+            response.message = "Estado insertado exitosamente";
+            response.response = estadoResponse;
             return response;
         }
 
-        public async Task<ResponseModel> Update(EmpresaRequest element)
+        public async Task<ResponseModel> Update(EstadoRequest element)
         {
             ResponseModel response = new ResponseModel();
-            EmpresaResponse empresaResponse = new EmpresaResponse();
+            EstadoResponse estadoResponse = new EstadoResponse();
             try
             {
-                var empresa = await _empresaQuery.GetById(element.Id);
+                var estado = await _estadoQuery.GetById(element.Id);
 
-                if (empresa == null)
+                if (estado == null)
                 {
                     response.statusCode = 404;
-                    response.message = "La empresa seleccionado no existe";
+                    response.message = "El estado seleccionado no existe";
                     response.response = null;
                     return response;
                 }
 
-                empresa.Descripcion = element.Descripcion;
-                empresa.Habilitado = element.Habilitado;
+                estado.Descripcion = element.Descripcion;
 
-                await _empresaCommand.Update(empresa);
-                empresaResponse = _mapper.Map<EmpresaResponse>(empresa);
+                await _estadoCommand.Update(estado);
+                estadoResponse = _mapper.Map<EstadoResponse>(estado);
 
-                //_logger.LogInformation("Se actualizó la empresa: " + empresa.Id + ". Nombre anterior: " + empresa.Nombre + ". Nombre actual: " + entity.Nombre);
+                //_logger.LogInformation("Se actualizó el estado: " + estado.Id + ". Nombre anterior: " + estado.Nombre + ". Nombre actual: " + entity.Nombre);
             }
             catch (Exception ex)
             {
@@ -179,8 +178,8 @@ namespace Ecommerce.Application.Services
             }
 
             response.statusCode = 200;
-            response.message = "Empresa actualizada exitosamente";
-            response.response = empresaResponse;
+            response.message = "Estado actualizado exitosamente";
+            response.response = estadoResponse;
             return response;
         }
     }

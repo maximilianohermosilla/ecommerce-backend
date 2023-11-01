@@ -7,31 +7,31 @@ using Ecommerce.Domain.Entities;
 
 namespace Ecommerce.Application.Services
 {
-    public class EmpresaService: IEmpresaService
+    public class FormaEntregaService: IFormaEntregaService
     {
-        private readonly IEmpresaQuery _empresaQuery;
-        private readonly IEmpresaCommand _empresaCommand;
+        private readonly IFormaEntregaQuery _formaDeEntregaQuery;
+        private readonly IFormaEntregaCommand _formaDeEntregaCommand;
         private readonly IMapper _mapper;
 
-        public EmpresaService(IEmpresaQuery empresaQuery, IEmpresaCommand empresaCommand, IMapper mapper)
+        public FormaEntregaService(IFormaEntregaQuery formaDeEntregaQuery, IFormaEntregaCommand formaDeEntregaCommand, IMapper mapper)
         {
-            _empresaQuery = empresaQuery;
-            _empresaCommand = empresaCommand;
+            _formaDeEntregaQuery = formaDeEntregaQuery;
+            _formaDeEntregaCommand = formaDeEntregaCommand;
             _mapper = mapper;
         }
 
         public async Task<ResponseModel> Delete(int id)
         {
             ResponseModel response = new ResponseModel();
-            EmpresaResponse empresaResponse = new EmpresaResponse();
+            FormaEntregaResponse formaDeEntregaResponse = new FormaEntregaResponse();
             try
             {
-                var estilo = await _empresaQuery.GetById(id);
+                var estilo = await _formaDeEntregaQuery.GetById(id);
 
                 if (estilo == null)
                 {
                     response.statusCode = 404;
-                    response.message = "La empresa seleccionada no existe";
+                    response.message = "La forma de entrega seleccionada no existe";
                     response.response = null;
                     return response;
                 }
@@ -46,8 +46,8 @@ namespace Ecommerce.Application.Services
                 //    return response;
                 //}
 
-                await _empresaCommand.Delete(estilo);
-                empresaResponse = _mapper.Map<EmpresaResponse>(estilo);
+                await _formaDeEntregaCommand.Delete(estilo);
+                formaDeEntregaResponse = _mapper.Map<FormaEntregaResponse>(estilo);
 
                 //_logger.LogInformation("Se eliminó el estilo: " + id + ", " + estilo.Nombre);
             }
@@ -59,8 +59,8 @@ namespace Ecommerce.Application.Services
             }
 
             response.statusCode = 200;
-            response.message = "Empresa eliminada exitosamente";
-            response.response = empresaResponse;
+            response.message = "Forma de entrega eliminada exitosamente";
+            response.response = formaDeEntregaResponse;
             return response;
         }
 
@@ -70,8 +70,8 @@ namespace Ecommerce.Application.Services
 
             try
             {
-                List<Empresa> lista = await _empresaQuery.GetAll();
-                List<EmpresaResponse> listaDTO = _mapper.Map<List<EmpresaResponse>>(lista);
+                List<FormaEntrega> lista = await _formaDeEntregaQuery.GetAll();
+                List<FormaEntregaResponse> listaDTO = _mapper.Map<List<FormaEntregaResponse>>(lista);
 
                 response.message = "Consulta realizada correctamente";
                 response.statusCode = 200;
@@ -93,21 +93,21 @@ namespace Ecommerce.Application.Services
 
             try
             {
-                Empresa empresa = await _empresaQuery.GetById(id);
+                FormaEntrega formaDeEntrega = await _formaDeEntregaQuery.GetById(id);
 
-                if (empresa == null)
+                if (formaDeEntrega == null)
                 {
                     response.statusCode = 404;
-                    response.message = "La empresa seleccionada no existe";
+                    response.message = "La forma de entrega seleccionada no existe";
                     response.response = null;
                     return response;
                 }
 
-                EmpresaResponse empresaResponse = _mapper.Map<EmpresaResponse>(empresa);
+                FormaEntregaResponse formaDeEntregaResponse = _mapper.Map<FormaEntregaResponse>(formaDeEntrega);
 
                 response.message = "Consulta realizada correctamente";
                 response.statusCode = 200;
-                response.response = empresaResponse;
+                response.response = formaDeEntregaResponse;
             }
             catch (Exception ex)
             {
@@ -119,18 +119,18 @@ namespace Ecommerce.Application.Services
             return response;
         }
 
-        public async Task<ResponseModel> Insert(EmpresaRequest element)
+        public async Task<ResponseModel> Insert(FormaEntregaRequest element)
         {
 
             ResponseModel response = new ResponseModel();
-            EmpresaResponse empresaResponse = new EmpresaResponse();
+            FormaEntregaResponse formaDeEntregaResponse = new FormaEntregaResponse();
             try
             {
-                Empresa empresa = _mapper.Map<Empresa>(element);
-                empresa = await _empresaCommand.Insert(empresa);
-                empresaResponse = _mapper.Map<EmpresaResponse>(empresa);
+                FormaEntrega formaDeEntrega = _mapper.Map<FormaEntrega>(element);
+                formaDeEntrega = await _formaDeEntregaCommand.Insert(formaDeEntrega);
+                formaDeEntregaResponse = _mapper.Map<FormaEntregaResponse>(formaDeEntrega);
 
-                //_logger.LogInformation("Se insertó un nuevo empresa: " + empresa.Id + ". Nombre: " + empresa.Nombre);
+                //_logger.LogInformation("Se insertó un nuevo formaDeEntrega: " + formaDeEntrega.Id + ". Nombre: " + formaDeEntrega.Nombre);
             }
             catch (Exception ex)
             {
@@ -141,34 +141,33 @@ namespace Ecommerce.Application.Services
             }
 
             response.statusCode = 201;
-            response.message = "Empresa insertada exitosamente";
-            response.response = empresaResponse;
+            response.message = "Forma de entrega insertada exitosamente";
+            response.response = formaDeEntregaResponse;
             return response;
         }
 
-        public async Task<ResponseModel> Update(EmpresaRequest element)
+        public async Task<ResponseModel> Update(FormaEntregaRequest element)
         {
             ResponseModel response = new ResponseModel();
-            EmpresaResponse empresaResponse = new EmpresaResponse();
+            FormaEntregaResponse formaDeEntregaResponse = new FormaEntregaResponse();
             try
             {
-                var empresa = await _empresaQuery.GetById(element.Id);
+                var formaDeEntrega = await _formaDeEntregaQuery.GetById(element.Id);
 
-                if (empresa == null)
+                if (formaDeEntrega == null)
                 {
                     response.statusCode = 404;
-                    response.message = "La empresa seleccionado no existe";
+                    response.message = "La forma de entrega seleccionado no existe";
                     response.response = null;
                     return response;
                 }
 
-                empresa.Descripcion = element.Descripcion;
-                empresa.Habilitado = element.Habilitado;
+                formaDeEntrega.Descripcion = element.Descripcion;
 
-                await _empresaCommand.Update(empresa);
-                empresaResponse = _mapper.Map<EmpresaResponse>(empresa);
+                await _formaDeEntregaCommand.Update(formaDeEntrega);
+                formaDeEntregaResponse = _mapper.Map<FormaEntregaResponse>(formaDeEntrega);
 
-                //_logger.LogInformation("Se actualizó la empresa: " + empresa.Id + ". Nombre anterior: " + empresa.Nombre + ". Nombre actual: " + entity.Nombre);
+                //_logger.LogInformation("Se actualizó la formaDeEntrega: " + formaDeEntrega.Id + ". Nombre anterior: " + formaDeEntrega.Nombre + ". Nombre actual: " + entity.Nombre);
             }
             catch (Exception ex)
             {
@@ -179,8 +178,8 @@ namespace Ecommerce.Application.Services
             }
 
             response.statusCode = 200;
-            response.message = "Empresa actualizada exitosamente";
-            response.response = empresaResponse;
+            response.message = "Forma de entrega actualizada exitosamente";
+            response.response = formaDeEntregaResponse;
             return response;
         }
     }

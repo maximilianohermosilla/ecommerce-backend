@@ -1,7 +1,6 @@
 ﻿using AutoMapper.Internal;
-using Ecommerce.Application.Interfaces.IQueries;
+using Ecommerce.Application.Interfaces.IServices;
 using Ecommerce.Application.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EcommerceAPI.Controllers
@@ -94,7 +93,7 @@ namespace EcommerceAPI.Controllers
 
         [HttpPut]
         //[Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Update(EmpresaRequest request, int id)
+        public async Task<IActionResult> Update(EmpresaRequest request)
         {
             try
             {

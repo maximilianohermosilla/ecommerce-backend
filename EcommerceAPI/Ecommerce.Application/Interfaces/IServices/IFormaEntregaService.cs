@@ -2,12 +2,12 @@
 
 namespace Ecommerce.Application.Interfaces.IServices
 {
-    public interface IPerfilService
+    public interface IFormaEntregaService
     { 
         Task<ResponseModel> GetAll();
         Task<ResponseModel> GetById(int id);
-        Task<ResponseModel> Insert(PerfilRequest element);
-        Task<ResponseModel> Update(PerfilRequest element);
+        Task<ResponseModel> Insert(FormaEntregaRequest element);
+        Task<ResponseModel> Update(FormaEntregaRequest element);
         Task<ResponseModel> Delete(int id);
     }
 }

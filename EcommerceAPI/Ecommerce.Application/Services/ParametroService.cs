@@ -7,31 +7,31 @@ using Ecommerce.Domain.Entities;
 
 namespace Ecommerce.Application.Services
 {
-    public class EmpresaService: IEmpresaService
+    public class ParametroService: IParametroService
     {
-        private readonly IEmpresaQuery _empresaQuery;
-        private readonly IEmpresaCommand _empresaCommand;
+        private readonly IParametroQuery _parametroQuery;
+        private readonly IParametroCommand _parametroCommand;
         private readonly IMapper _mapper;
 
-        public EmpresaService(IEmpresaQuery empresaQuery, IEmpresaCommand empresaCommand, IMapper mapper)
+        public ParametroService(IParametroQuery parametroQuery, IParametroCommand parametroCommand, IMapper mapper)
         {
-            _empresaQuery = empresaQuery;
-            _empresaCommand = empresaCommand;
-            _mapper = mapper;
+            _parametroQuery = parametroQuery;
+            _parametroCommand = parametroCommand;
+            _mapper = mapper;            
         }
 
         public async Task<ResponseModel> Delete(int id)
         {
             ResponseModel response = new ResponseModel();
-            EmpresaResponse empresaResponse = new EmpresaResponse();
+            ParametroResponse parametroResponse = new ParametroResponse();
             try
             {
-                var estilo = await _empresaQuery.GetById(id);
+                var estilo = await _parametroQuery.GetById(id);
 
                 if (estilo == null)
                 {
                     response.statusCode = 404;
-                    response.message = "La empresa seleccionada no existe";
+                    response.message = "El parametro seleccionado no existe";
                     response.response = null;
                     return response;
                 }
@@ -46,8 +46,8 @@ namespace Ecommerce.Application.Services
                 //    return response;
                 //}
 
-                await _empresaCommand.Delete(estilo);
-                empresaResponse = _mapper.Map<EmpresaResponse>(estilo);
+                await _parametroCommand.Delete(estilo);
+                parametroResponse = _mapper.Map<ParametroResponse>(estilo);
 
                 //_logger.LogInformation("Se eliminó el estilo: " + id + ", " + estilo.Nombre);
             }
@@ -59,8 +59,8 @@ namespace Ecommerce.Application.Services
             }
 
             response.statusCode = 200;
-            response.message = "Empresa eliminada exitosamente";
-            response.response = empresaResponse;
+            response.message = "Parametro eliminado exitosamente";
+            response.response = parametroResponse;
             return response;
         }
 
@@ -70,8 +70,8 @@ namespace Ecommerce.Application.Services
 
             try
             {
-                List<Empresa> lista = await _empresaQuery.GetAll();
-                List<EmpresaResponse> listaDTO = _mapper.Map<List<EmpresaResponse>>(lista);
+                List<Parametro> lista = await _parametroQuery.GetAll();
+                List<ParametroResponse> listaDTO = _mapper.Map<List<ParametroResponse>>(lista);
 
                 response.message = "Consulta realizada correctamente";
                 response.statusCode = 200;
@@ -87,27 +87,27 @@ namespace Ecommerce.Application.Services
             return response;
         }
 
-        public async Task<ResponseModel> GetById(int id)
+        public async Task<ResponseModel> GetByKey(string clave)
         {
             ResponseModel response = new ResponseModel();
 
             try
             {
-                Empresa empresa = await _empresaQuery.GetById(id);
+                Parametro parametro = await _parametroQuery.GetByKey(clave);
 
-                if (empresa == null)
+                if (parametro == null)
                 {
                     response.statusCode = 404;
-                    response.message = "La empresa seleccionada no existe";
+                    response.message = "El parametro seleccionado no existe";
                     response.response = null;
                     return response;
                 }
 
-                EmpresaResponse empresaResponse = _mapper.Map<EmpresaResponse>(empresa);
+                ParametroResponse parametroResponse = _mapper.Map<ParametroResponse>(parametro);
 
                 response.message = "Consulta realizada correctamente";
                 response.statusCode = 200;
-                response.response = empresaResponse;
+                response.response = parametroResponse;
             }
             catch (Exception ex)
             {
@@ -119,18 +119,18 @@ namespace Ecommerce.Application.Services
             return response;
         }
 
-        public async Task<ResponseModel> Insert(EmpresaRequest element)
+        public async Task<ResponseModel> Insert(ParametroRequest element)
         {
 
             ResponseModel response = new ResponseModel();
-            EmpresaResponse empresaResponse = new EmpresaResponse();
+            ParametroResponse parametroResponse = new ParametroResponse();
             try
             {
-                Empresa empresa = _mapper.Map<Empresa>(element);
-                empresa = await _empresaCommand.Insert(empresa);
-                empresaResponse = _mapper.Map<EmpresaResponse>(empresa);
+                Parametro parametro = _mapper.Map<Parametro>(element);
+                parametro = await _parametroCommand.Insert(parametro);
+                parametroResponse = _mapper.Map<ParametroResponse>(parametro);
 
-                //_logger.LogInformation("Se insertó un nuevo empresa: " + empresa.Id + ". Nombre: " + empresa.Nombre);
+                //_logger.LogInformation("Se insertó un nuevo parametro: " + parametro.Id + ". Nombre: " + parametro.Nombre);
             }
             catch (Exception ex)
             {
@@ -141,34 +141,34 @@ namespace Ecommerce.Application.Services
             }
 
             response.statusCode = 201;
-            response.message = "Empresa insertada exitosamente";
-            response.response = empresaResponse;
+            response.message = "Parametro insertado exitosamente";
+            response.response = parametroResponse;
             return response;
         }
 
-        public async Task<ResponseModel> Update(EmpresaRequest element)
+        public async Task<ResponseModel> Update(ParametroRequest element)
         {
             ResponseModel response = new ResponseModel();
-            EmpresaResponse empresaResponse = new EmpresaResponse();
+            ParametroResponse parametroResponse = new ParametroResponse();
             try
             {
-                var empresa = await _empresaQuery.GetById(element.Id);
+                var parametro = await _parametroQuery.GetByKey(element.Clave);
 
-                if (empresa == null)
+                if (parametro == null)
                 {
                     response.statusCode = 404;
-                    response.message = "La empresa seleccionado no existe";
+                    response.message = "El parametro seleccionado no existe";
                     response.response = null;
                     return response;
                 }
 
-                empresa.Descripcion = element.Descripcion;
-                empresa.Habilitado = element.Habilitado;
+                parametro.Clave = element.Clave;
+                parametro.Valor = element.Valor;
 
-                await _empresaCommand.Update(empresa);
-                empresaResponse = _mapper.Map<EmpresaResponse>(empresa);
+                await _parametroCommand.Update(parametro);
+                parametroResponse = _mapper.Map<ParametroResponse>(parametro);
 
-                //_logger.LogInformation("Se actualizó la empresa: " + empresa.Id + ". Nombre anterior: " + empresa.Nombre + ". Nombre actual: " + entity.Nombre);
+                //_logger.LogInformation("Se actualizó el parametro: " + parametro.Id + ". Nombre anterior: " + parametro.Nombre + ". Nombre actual: " + entity.Nombre);
             }
             catch (Exception ex)
             {
@@ -179,8 +179,8 @@ namespace Ecommerce.Application.Services
             }
 
             response.statusCode = 200;
-            response.message = "Empresa actualizada exitosamente";
-            response.response = empresaResponse;
+            response.message = "Parametro actualizado exitosamente";
+            response.response = parametroResponse;
             return response;
         }
     }
