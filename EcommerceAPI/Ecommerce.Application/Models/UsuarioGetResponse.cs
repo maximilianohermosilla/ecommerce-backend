@@ -16,5 +16,6 @@
         public DateTime FechaCreacion { get; set; }
         public PerfilResponse Perfil { get; set; }
         public EmpresaResponse Empresa { get; set; }
+        public List<DireccionResponse> Direcciones { get; set; }
     }
 }

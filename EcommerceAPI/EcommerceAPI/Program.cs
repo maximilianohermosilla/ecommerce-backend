@@ -42,6 +42,10 @@ builder.Services.AddTransient<IEmpresaService, EmpresaService>();
 builder.Services.AddTransient<IEmpresaQuery, EmpresaQuery>();
 builder.Services.AddTransient<IEmpresaCommand, EmpresaCommand>();
 
+builder.Services.AddTransient<IUsuarioService, UsuarioService>();
+builder.Services.AddTransient<IUsuarioQuery, UsuarioQuery>();
+builder.Services.AddTransient<IUsuarioCommand, UsuarioCommand>();
+
 // Configurar AutoMapper
 var mapperConfig = new MapperConfiguration(mc =>
 {
