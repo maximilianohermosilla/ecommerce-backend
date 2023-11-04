@@ -201,7 +201,7 @@ namespace Ecommerce.AccessData
                 new TipoFormaPago { Id = 2, Descripcion = "Tarjeta de Crédito" },
                 new TipoFormaPago { Id = 3, Descripcion = "Tarjeta de Débito" },
                 new TipoFormaPago { Id = 4, Descripcion = "MercadoPago" },
-                new TipoFormaPago { Id = 4, Descripcion = "Transferencia" }
+                new TipoFormaPago { Id = 5, Descripcion = "Transferencia" }
             );
         }
     }

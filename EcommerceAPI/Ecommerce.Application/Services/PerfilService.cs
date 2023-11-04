@@ -4,6 +4,7 @@ using Ecommerce.Application.Interfaces.IQueries;
 using Ecommerce.Application.Interfaces.IServices;
 using Ecommerce.Application.Models;
 using Ecommerce.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Ecommerce.Application.Services
 {
@@ -12,12 +13,14 @@ namespace Ecommerce.Application.Services
         private readonly IPerfilQuery _perfilQuery;
         private readonly IPerfilCommand _perfilCommand;
         private readonly IMapper _mapper;
+        private readonly ILogger<PerfilService> _logger;
 
-        public PerfilService(IPerfilQuery perfilQuery, IPerfilCommand perfilCommand, IMapper mapper)
+        public PerfilService(IPerfilQuery perfilQuery, IPerfilCommand perfilCommand, IMapper mapper, ILogger<PerfilService> logger)
         {
             _perfilQuery = perfilQuery;
             _perfilCommand = perfilCommand;
-            _mapper = mapper;            
+            _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<ResponseModel> Delete(int id)
@@ -26,9 +29,9 @@ namespace Ecommerce.Application.Services
             PerfilResponse perfilResponse = new PerfilResponse();
             try
             {
-                var estilo = await _perfilQuery.GetById(id);
+                var perfil = await _perfilQuery.GetById(id);
 
-                if (estilo == null)
+                if (perfil == null)
                 {
                     response.statusCode = 404;
                     response.message = "El perfil seleccionado no existe";
@@ -41,21 +44,22 @@ namespace Ecommerce.Application.Services
                 //if (cervezas.Any())
                 //{
                 //    response.statusCode = 409;
-                //    response.message = "No se puede eliminar el estilo porque posee al menos una cerveza asignada";
+                //    response.message = "No se puede eliminar el perfil porque posee al menos una cerveza asignada";
                 //    response.response = null;
                 //    return response;
                 //}
 
-                await _perfilCommand.Delete(estilo);
-                perfilResponse = _mapper.Map<PerfilResponse>(estilo);
+                await _perfilCommand.Delete(perfil);
+                perfilResponse = _mapper.Map<PerfilResponse>(perfil);
 
-                //_logger.LogInformation("Se eliminó el estilo: " + id + ", " + estilo.Nombre);
+                _logger.LogInformation("Se eliminó el perfil: " + id + ", " + perfil.Descripcion);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             response.statusCode = 200;
@@ -82,6 +86,7 @@ namespace Ecommerce.Application.Services
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             return response;
@@ -114,6 +119,7 @@ namespace Ecommerce.Application.Services
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             return response;
@@ -130,13 +136,14 @@ namespace Ecommerce.Application.Services
                 perfil = await _perfilCommand.Insert(perfil);
                 perfilResponse = _mapper.Map<PerfilResponse>(perfil);
 
-                //_logger.LogInformation("Se insertó un nuevo perfil: " + perfil.Id + ". Nombre: " + perfil.Nombre);
+                _logger.LogInformation("Se insertó un nuevo perfil: " + perfil.Id + ". Nombre: " + perfil.Descripcion);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
                 return response;
             }
 
@@ -168,13 +175,14 @@ namespace Ecommerce.Application.Services
                 await _perfilCommand.Update(perfil);
                 perfilResponse = _mapper.Map<PerfilResponse>(perfil);
 
-                //_logger.LogInformation("Se actualizó el perfil: " + perfil.Id + ". Nombre anterior: " + perfil.Nombre + ". Nombre actual: " + entity.Nombre);
+                _logger.LogInformation("Se actualizó el perfil: " + perfil.Id + ". Nombre anterior: " + perfil.Descripcion + ". Nombre actual: " + element.Descripcion);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
                 return response;
             }
 

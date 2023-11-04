@@ -4,6 +4,7 @@ using Ecommerce.Application.Interfaces.IQueries;
 using Ecommerce.Application.Interfaces.IServices;
 using Ecommerce.Application.Models;
 using Ecommerce.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Ecommerce.Application.Services
 {
@@ -12,12 +13,14 @@ namespace Ecommerce.Application.Services
         private readonly IEstadoQuery _estadoQuery;
         private readonly IEstadoCommand _estadoCommand;
         private readonly IMapper _mapper;
+        private readonly ILogger<EstadoService> _logger;
 
-        public EstadoService(IEstadoQuery estadoQuery, IEstadoCommand estadoCommand, IMapper mapper)
+        public EstadoService(IEstadoQuery estadoQuery, IEstadoCommand estadoCommand, IMapper mapper, ILogger<EstadoService> logger)
         {
             _estadoQuery = estadoQuery;
             _estadoCommand = estadoCommand;
             _mapper = mapper;            
+            _logger = logger;
         }
 
         public async Task<ResponseModel> Delete(int id)
@@ -49,13 +52,14 @@ namespace Ecommerce.Application.Services
                 await _estadoCommand.Delete(estilo);
                 estadoResponse = _mapper.Map<EstadoResponse>(estilo);
 
-                //_logger.LogInformation("Se eliminó el estilo: " + id + ", " + estilo.Nombre);
+                _logger.LogInformation("Se eliminó el estado: " + id + ", " + estilo.Descripcion);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             response.statusCode = 200;
@@ -82,6 +86,7 @@ namespace Ecommerce.Application.Services
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             return response;
@@ -114,6 +119,7 @@ namespace Ecommerce.Application.Services
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             return response;
@@ -130,13 +136,14 @@ namespace Ecommerce.Application.Services
                 estado = await _estadoCommand.Insert(estado);
                 estadoResponse = _mapper.Map<EstadoResponse>(estado);
 
-                //_logger.LogInformation("Se insertó un nuevo estado: " + estado.Id + ". Nombre: " + estado.Nombre);
+                _logger.LogInformation("Se insertó un nuevo estado: " + estado.Id + ". Nombre: " + estado.Descripcion);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
                 return response;
             }
 
@@ -167,13 +174,14 @@ namespace Ecommerce.Application.Services
                 await _estadoCommand.Update(estado);
                 estadoResponse = _mapper.Map<EstadoResponse>(estado);
 
-                //_logger.LogInformation("Se actualizó el estado: " + estado.Id + ". Nombre anterior: " + estado.Nombre + ". Nombre actual: " + entity.Nombre);
+                _logger.LogInformation("Se actualizó el estado: " + estado.Id + ". Nombre anterior: " + estado.Descripcion + ". Nombre actual: " + element.Descripcion);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
                 return response;
             }
 

@@ -4,6 +4,7 @@ using Ecommerce.Application.Interfaces.IQueries;
 using Ecommerce.Application.Interfaces.IServices;
 using Ecommerce.Application.Models;
 using Ecommerce.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Ecommerce.Application.Services
 {
@@ -12,12 +13,14 @@ namespace Ecommerce.Application.Services
         private readonly IFormaEntregaQuery _formaDeEntregaQuery;
         private readonly IFormaEntregaCommand _formaDeEntregaCommand;
         private readonly IMapper _mapper;
+        private readonly ILogger<FormaEntregaService> _logger;
 
-        public FormaEntregaService(IFormaEntregaQuery formaDeEntregaQuery, IFormaEntregaCommand formaDeEntregaCommand, IMapper mapper)
+        public FormaEntregaService(IFormaEntregaQuery formaDeEntregaQuery, IFormaEntregaCommand formaDeEntregaCommand, IMapper mapper, ILogger<FormaEntregaService> logger)
         {
             _formaDeEntregaQuery = formaDeEntregaQuery;
             _formaDeEntregaCommand = formaDeEntregaCommand;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<ResponseModel> Delete(int id)
@@ -49,13 +52,14 @@ namespace Ecommerce.Application.Services
                 await _formaDeEntregaCommand.Delete(estilo);
                 formaDeEntregaResponse = _mapper.Map<FormaEntregaResponse>(estilo);
 
-                //_logger.LogInformation("Se eliminó el estilo: " + id + ", " + estilo.Nombre);
+                _logger.LogInformation("Se eliminó la forma de entrega: " + id + ", " + estilo.Descripcion);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             response.statusCode = 200;
@@ -82,6 +86,7 @@ namespace Ecommerce.Application.Services
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             return response;
@@ -114,6 +119,7 @@ namespace Ecommerce.Application.Services
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             return response;
@@ -130,13 +136,14 @@ namespace Ecommerce.Application.Services
                 formaDeEntrega = await _formaDeEntregaCommand.Insert(formaDeEntrega);
                 formaDeEntregaResponse = _mapper.Map<FormaEntregaResponse>(formaDeEntrega);
 
-                //_logger.LogInformation("Se insertó un nuevo formaDeEntrega: " + formaDeEntrega.Id + ". Nombre: " + formaDeEntrega.Nombre);
+                _logger.LogInformation("Se insertó una nueva forma de entrega: " + formaDeEntrega.Id + ". Nombre: " + formaDeEntrega.Descripcion);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
                 return response;
             }
 
@@ -167,13 +174,14 @@ namespace Ecommerce.Application.Services
                 await _formaDeEntregaCommand.Update(formaDeEntrega);
                 formaDeEntregaResponse = _mapper.Map<FormaEntregaResponse>(formaDeEntrega);
 
-                //_logger.LogInformation("Se actualizó la formaDeEntrega: " + formaDeEntrega.Id + ". Nombre anterior: " + formaDeEntrega.Nombre + ". Nombre actual: " + entity.Nombre);
+                _logger.LogInformation("Se actualizó la forma de entrega: " + formaDeEntrega.Id + ". Nombre anterior: " + formaDeEntrega.Descripcion + ". Nombre actual: " + element.Descripcion);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
                 return response;
             }
 

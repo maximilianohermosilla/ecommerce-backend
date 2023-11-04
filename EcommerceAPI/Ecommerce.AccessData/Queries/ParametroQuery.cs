@@ -24,5 +24,11 @@ namespace Ecommerce.AccessData.Queries
             var element = await _context.Parametro.Where(p => p.Clave == clave).FirstOrDefaultAsync();
             return element;
         }
+
+        public async Task<Parametro?> GetById(int id)
+        {
+            var element = await _context.Parametro.Where(p => p.Id == id).FirstOrDefaultAsync();
+            return element;
+        }
     }
 }

@@ -4,6 +4,7 @@ using Ecommerce.Application.Interfaces.IQueries;
 using Ecommerce.Application.Interfaces.IServices;
 using Ecommerce.Application.Models;
 using Ecommerce.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Ecommerce.Application.Services
 {
@@ -12,12 +13,14 @@ namespace Ecommerce.Application.Services
         private readonly IEmpresaQuery _empresaQuery;
         private readonly IEmpresaCommand _empresaCommand;
         private readonly IMapper _mapper;
+        private readonly ILogger<EmpresaService> _logger;
 
-        public EmpresaService(IEmpresaQuery empresaQuery, IEmpresaCommand empresaCommand, IMapper mapper)
+        public EmpresaService(IEmpresaQuery empresaQuery, IEmpresaCommand empresaCommand, IMapper mapper, ILogger<EmpresaService> logger)
         {
             _empresaQuery = empresaQuery;
             _empresaCommand = empresaCommand;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<ResponseModel> Delete(int id)
@@ -49,13 +52,14 @@ namespace Ecommerce.Application.Services
                 await _empresaCommand.Delete(estilo);
                 empresaResponse = _mapper.Map<EmpresaResponse>(estilo);
 
-                //_logger.LogInformation("Se eliminó el estilo: " + id + ", " + estilo.Nombre);
+                _logger.LogInformation("Se eliminó la empresa: " + id + ", " + estilo.Descripcion);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             response.statusCode = 200;
@@ -71,8 +75,7 @@ namespace Ecommerce.Application.Services
             try
             {
                 List<Empresa> lista = await _empresaQuery.GetAll();
-                List<EmpresaResponse> listaDTO = _mapper.Map<List<EmpresaResponse>>(lista);
-
+                List<EmpresaResponse> listaDTO = _mapper.Map<List<EmpresaResponse>>(lista);                            
                 response.message = "Consulta realizada correctamente";
                 response.statusCode = 200;
                 response.response = listaDTO;
@@ -82,6 +85,7 @@ namespace Ecommerce.Application.Services
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             return response;
@@ -114,6 +118,7 @@ namespace Ecommerce.Application.Services
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             return response;
@@ -130,13 +135,14 @@ namespace Ecommerce.Application.Services
                 empresa = await _empresaCommand.Insert(empresa);
                 empresaResponse = _mapper.Map<EmpresaResponse>(empresa);
 
-                //_logger.LogInformation("Se insertó un nuevo empresa: " + empresa.Id + ". Nombre: " + empresa.Nombre);
+                _logger.LogInformation("Se insertó una nueva empresa: " + empresa.Id + ". Nombre: " + empresa.Descripcion);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
                 return response;
             }
 
@@ -168,13 +174,14 @@ namespace Ecommerce.Application.Services
                 await _empresaCommand.Update(empresa);
                 empresaResponse = _mapper.Map<EmpresaResponse>(empresa);
 
-                //_logger.LogInformation("Se actualizó la empresa: " + empresa.Id + ". Nombre anterior: " + empresa.Nombre + ". Nombre actual: " + entity.Nombre);
+                _logger.LogInformation("Se actualizó la empresa: " + empresa.Id + ". Nombre anterior: " + empresa.Descripcion + ". Nombre actual: " + element.Descripcion);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
                 return response;
             }
 

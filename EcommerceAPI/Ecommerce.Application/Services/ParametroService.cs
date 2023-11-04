@@ -4,6 +4,7 @@ using Ecommerce.Application.Interfaces.IQueries;
 using Ecommerce.Application.Interfaces.IServices;
 using Ecommerce.Application.Models;
 using Ecommerce.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Ecommerce.Application.Services
 {
@@ -12,12 +13,14 @@ namespace Ecommerce.Application.Services
         private readonly IParametroQuery _parametroQuery;
         private readonly IParametroCommand _parametroCommand;
         private readonly IMapper _mapper;
+        private readonly ILogger<ParametroService> _logger;
 
-        public ParametroService(IParametroQuery parametroQuery, IParametroCommand parametroCommand, IMapper mapper)
+        public ParametroService(IParametroQuery parametroQuery, IParametroCommand parametroCommand, IMapper mapper, ILogger<ParametroService> logger)
         {
             _parametroQuery = parametroQuery;
             _parametroCommand = parametroCommand;
-            _mapper = mapper;            
+            _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<ResponseModel> Delete(int id)
@@ -26,9 +29,9 @@ namespace Ecommerce.Application.Services
             ParametroResponse parametroResponse = new ParametroResponse();
             try
             {
-                var estilo = await _parametroQuery.GetById(id);
+                var parametro = await _parametroQuery.GetById(id);
 
-                if (estilo == null)
+                if (parametro == null)
                 {
                     response.statusCode = 404;
                     response.message = "El parametro seleccionado no existe";
@@ -41,21 +44,22 @@ namespace Ecommerce.Application.Services
                 //if (cervezas.Any())
                 //{
                 //    response.statusCode = 409;
-                //    response.message = "No se puede eliminar el estilo porque posee al menos una cerveza asignada";
+                //    response.message = "No se puede eliminar el parametro porque posee al menos una cerveza asignada";
                 //    response.response = null;
                 //    return response;
                 //}
 
-                await _parametroCommand.Delete(estilo);
-                parametroResponse = _mapper.Map<ParametroResponse>(estilo);
+                await _parametroCommand.Delete(parametro);
+                parametroResponse = _mapper.Map<ParametroResponse>(parametro);
 
-                //_logger.LogInformation("Se eliminó el estilo: " + id + ", " + estilo.Nombre);
+                _logger.LogInformation("Se eliminó el parametro: " + id + ", Clave: " + parametro.Clave + ", Valor: " + parametro.Valor);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             response.statusCode = 200;
@@ -82,6 +86,7 @@ namespace Ecommerce.Application.Services
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             return response;
@@ -114,6 +119,7 @@ namespace Ecommerce.Application.Services
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             return response;
@@ -130,13 +136,14 @@ namespace Ecommerce.Application.Services
                 parametro = await _parametroCommand.Insert(parametro);
                 parametroResponse = _mapper.Map<ParametroResponse>(parametro);
 
-                //_logger.LogInformation("Se insertó un nuevo parametro: " + parametro.Id + ". Nombre: " + parametro.Nombre);
+                _logger.LogInformation("Se insertó un nuevo parametro: " + parametro.Id + ". Clave: " + parametro.Clave + ", Valor: " + parametro.Valor);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
                 return response;
             }
 
@@ -168,13 +175,14 @@ namespace Ecommerce.Application.Services
                 await _parametroCommand.Update(parametro);
                 parametroResponse = _mapper.Map<ParametroResponse>(parametro);
 
-                //_logger.LogInformation("Se actualizó el parametro: " + parametro.Id + ". Nombre anterior: " + parametro.Nombre + ". Nombre actual: " + entity.Nombre);
+                _logger.LogInformation("Se actualizó el parametro: " + parametro.Id + ". Valor anterior: " + parametro.Valor + ". Valor actual: " + element.Valor);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
                 return response;
             }
 

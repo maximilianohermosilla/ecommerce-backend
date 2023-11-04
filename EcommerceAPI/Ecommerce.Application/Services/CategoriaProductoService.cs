@@ -4,6 +4,7 @@ using Ecommerce.Application.Interfaces.IQueries;
 using Ecommerce.Application.Interfaces.IServices;
 using Ecommerce.Application.Models;
 using Ecommerce.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Ecommerce.Application.Services
 {
@@ -12,12 +13,14 @@ namespace Ecommerce.Application.Services
         private readonly ICategoriaProductoQuery _categoriaProductoQuery;
         private readonly ICategoriaProductoCommand _categoriaProductoCommand;
         private readonly IMapper _mapper;
+        private readonly ILogger<CategoriaProductoService> _logger;
 
-        public CategoriaProductoService(ICategoriaProductoQuery categoriaProductoQuery, ICategoriaProductoCommand categoriaProductoCommand, IMapper mapper)
+        public CategoriaProductoService(ICategoriaProductoQuery categoriaProductoQuery, ICategoriaProductoCommand categoriaProductoCommand, IMapper mapper, ILogger<CategoriaProductoService> logger)
         {
             _categoriaProductoQuery = categoriaProductoQuery;
             _categoriaProductoCommand = categoriaProductoCommand;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<ResponseModel> Delete(int id)
@@ -26,9 +29,9 @@ namespace Ecommerce.Application.Services
             CategoriaProductoResponse categoriaProductoResponse = new CategoriaProductoResponse();
             try
             {
-                var estilo = await _categoriaProductoQuery.GetById(id);
+                var categoria = await _categoriaProductoQuery.GetById(id);
 
-                if (estilo == null)
+                if (categoria == null)
                 {
                     response.statusCode = 404;
                     response.message = "La categoria seleccionada no existe";
@@ -41,21 +44,22 @@ namespace Ecommerce.Application.Services
                 //if (cervezas.Any())
                 //{
                 //    response.statusCode = 409;
-                //    response.message = "No se puede eliminar el estilo porque posee al menos una cerveza asignada";
+                //    response.message = "No se puede eliminar el categoria porque posee al menos una cerveza asignada";
                 //    response.response = null;
                 //    return response;
                 //}
 
-                await _categoriaProductoCommand.Delete(estilo);
-                categoriaProductoResponse = _mapper.Map<CategoriaProductoResponse>(estilo);
+                await _categoriaProductoCommand.Delete(categoria);
+                categoriaProductoResponse = _mapper.Map<CategoriaProductoResponse>(categoria);
 
-                //_logger.LogInformation("Se eliminó el estilo: " + id + ", " + estilo.Nombre);
+                _logger.LogInformation("Se eliminó la categoria: " + id + ", " + categoria.Descripcion);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             response.statusCode = 200;
@@ -82,6 +86,7 @@ namespace Ecommerce.Application.Services
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             return response;
@@ -114,6 +119,7 @@ namespace Ecommerce.Application.Services
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
             }
 
             return response;
@@ -130,13 +136,14 @@ namespace Ecommerce.Application.Services
                 categoriaProducto = await _categoriaProductoCommand.Insert(categoriaProducto);
                 categoriaProductoResponse = _mapper.Map<CategoriaProductoResponse>(categoriaProducto);
 
-                //_logger.LogInformation("Se insertó un nuevo categoriaProducto: " + categoriaProducto.Id + ". Nombre: " + categoriaProducto.Nombre);
+                _logger.LogInformation("Se insertó una nueva categoria: " + categoriaProducto.Id + ". Nombre: " + categoriaProducto.Descripcion);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
                 return response;
             }
 
@@ -168,13 +175,14 @@ namespace Ecommerce.Application.Services
                 await _categoriaProductoCommand.Update(categoriaProducto);
                 categoriaProductoResponse = _mapper.Map<CategoriaProductoResponse>(categoriaProducto);
 
-                //_logger.LogInformation("Se actualizó la categoriaProducto: " + categoriaProducto.Id + ". Nombre anterior: " + categoriaProducto.Nombre + ". Nombre actual: " + entity.Nombre);
+                _logger.LogInformation("Se actualizó la categoria: " + categoriaProducto.Id + ". Nombre anterior: " + categoriaProducto.Descripcion + ". Nombre actual: " + element.Descripcion);
             }
             catch (Exception ex)
             {
                 response.statusCode = 400;
                 response.message = ex.Message;
                 response.response = null;
+                _logger.LogError($"{this.ToString()}.{LogHelper.Method()} - {ex.Message}");
                 return response;
             }
 
