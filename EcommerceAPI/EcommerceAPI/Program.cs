@@ -46,6 +46,10 @@ builder.Services.AddTransient<IUsuarioService, UsuarioService>();
 builder.Services.AddTransient<IUsuarioQuery, UsuarioQuery>();
 builder.Services.AddTransient<IUsuarioCommand, UsuarioCommand>();
 
+builder.Services.AddTransient<IDireccionService, DireccionService>();
+builder.Services.AddTransient<IDireccionQuery, DireccionQuery>();
+builder.Services.AddTransient<IDireccionCommand, DireccionCommand>();
+
 // Configurar AutoMapper
 var mapperConfig = new MapperConfiguration(mc =>
 {

@@ -5,6 +5,7 @@ using Ecommerce.Application.Interfaces.IServices;
 using Ecommerce.Application.Models;
 using Ecommerce.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Ecommerce.Application.Services
 {
@@ -159,6 +160,7 @@ namespace Ecommerce.Application.Services
             try
             {
                 var empresa = await _empresaQuery.GetById(element.Id);
+                string empresaOld = JsonSerializer.Serialize(empresa);
 
                 if (empresa == null)
                 {
@@ -174,7 +176,7 @@ namespace Ecommerce.Application.Services
                 await _empresaCommand.Update(empresa);
                 empresaResponse = _mapper.Map<EmpresaResponse>(empresa);
 
-                _logger.LogInformation("Se actualizó la empresa: " + empresa.Id + ". Nombre anterior: " + empresa.Descripcion + ". Nombre actual: " + element.Descripcion);
+                _logger.LogInformation("Se actualizó la empresa: " + empresa.Id + ". Anterior: " + empresaOld + ". Actual: " + JsonSerializer.Serialize(empresa));
             }
             catch (Exception ex)
             {

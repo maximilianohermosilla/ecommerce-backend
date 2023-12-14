@@ -5,6 +5,7 @@ using Ecommerce.Application.Interfaces.IServices;
 using Ecommerce.Application.Models;
 using Ecommerce.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Ecommerce.Application.Services
 {
@@ -160,6 +161,7 @@ namespace Ecommerce.Application.Services
             try
             {
                 var categoriaProducto = await _categoriaProductoQuery.GetById(element.Id);
+                string categoriaProductoOld = JsonSerializer.Serialize(categoriaProducto);
 
                 if (categoriaProducto == null)
                 {
@@ -175,7 +177,7 @@ namespace Ecommerce.Application.Services
                 await _categoriaProductoCommand.Update(categoriaProducto);
                 categoriaProductoResponse = _mapper.Map<CategoriaProductoResponse>(categoriaProducto);
 
-                _logger.LogInformation("Se actualizó la categoria: " + categoriaProducto.Id + ". Nombre anterior: " + categoriaProducto.Descripcion + ". Nombre actual: " + element.Descripcion);
+                _logger.LogInformation("Se actualizó la categoria: " + categoriaProducto.Id + ". Anterior: " + categoriaProductoOld + ". Actual: " + JsonSerializer.Serialize(categoriaProducto));
             }
             catch (Exception ex)
             {

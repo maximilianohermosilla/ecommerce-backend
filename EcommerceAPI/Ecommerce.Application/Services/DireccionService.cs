@@ -9,17 +9,17 @@ using System.Text.Json;
 
 namespace Ecommerce.Application.Services
 {
-    public class ParametroService: IParametroService
+    public class DireccionService : IDireccionService
     {
-        private readonly IParametroQuery _parametroQuery;
-        private readonly IParametroCommand _parametroCommand;
+        private readonly IDireccionQuery _direccionQuery;
+        private readonly IDireccionCommand _direccionCommand;
         private readonly IMapper _mapper;
-        private readonly ILogger<ParametroService> _logger;
+        private readonly ILogger<DireccionService> _logger;
 
-        public ParametroService(IParametroQuery parametroQuery, IParametroCommand parametroCommand, IMapper mapper, ILogger<ParametroService> logger)
+        public DireccionService(IDireccionQuery direccionQuery, IDireccionCommand direccionCommand, IMapper mapper, ILogger<DireccionService> logger)
         {
-            _parametroQuery = parametroQuery;
-            _parametroCommand = parametroCommand;
+            _direccionQuery = direccionQuery;
+            _direccionCommand = direccionCommand;
             _mapper = mapper;
             _logger = logger;
         }
@@ -27,15 +27,15 @@ namespace Ecommerce.Application.Services
         public async Task<ResponseModel> Delete(int id)
         {
             ResponseModel response = new ResponseModel();
-            ParametroResponse parametroResponse = new ParametroResponse();
+            DireccionResponse direccionResponse = new DireccionResponse();
             try
             {
-                var parametro = await _parametroQuery.GetById(id);
+                var estilo = await _direccionQuery.GetById(id);
 
-                if (parametro == null)
+                if (estilo == null)
                 {
                     response.statusCode = 404;
-                    response.message = "El parametro seleccionado no existe";
+                    response.message = "La direccion seleccionada no existe";
                     response.response = null;
                     return response;
                 }
@@ -45,15 +45,15 @@ namespace Ecommerce.Application.Services
                 //if (cervezas.Any())
                 //{
                 //    response.statusCode = 409;
-                //    response.message = "No se puede eliminar el parametro porque posee al menos una cerveza asignada";
+                //    response.message = "No se puede eliminar el estilo porque posee al menos una cerveza asignada";
                 //    response.response = null;
                 //    return response;
                 //}
 
-                await _parametroCommand.Delete(parametro);
-                parametroResponse = _mapper.Map<ParametroResponse>(parametro);
+                await _direccionCommand.Delete(estilo);
+                direccionResponse = _mapper.Map<DireccionResponse>(estilo);
 
-                _logger.LogInformation("Se eliminó el parametro: " + id + ", Clave: " + parametro.Clave + ", Valor: " + parametro.Valor);
+                _logger.LogInformation("Se eliminó la direccion: " + id + ", " + estilo.Calle + " " + estilo.Numero);
             }
             catch (Exception ex)
             {
@@ -64,20 +64,19 @@ namespace Ecommerce.Application.Services
             }
 
             response.statusCode = 200;
-            response.message = "Parametro eliminado exitosamente";
-            response.response = parametroResponse;
+            response.message = "Direccion eliminada exitosamente";
+            response.response = direccionResponse;
             return response;
         }
 
-        public async Task<ResponseModel> GetAll()
+        public async Task<ResponseModel> GetAllByUser(int idUsuario)
         {
             ResponseModel response = new ResponseModel();
 
             try
             {
-                List<Parametro> lista = await _parametroQuery.GetAll();
-                List<ParametroResponse> listaDTO = _mapper.Map<List<ParametroResponse>>(lista);
-
+                List<Direccion> lista = await _direccionQuery.GetAllByUser(idUsuario);
+                List<DireccionResponse> listaDTO = _mapper.Map<List<DireccionResponse>>(lista);
                 response.message = "Consulta realizada correctamente";
                 response.statusCode = 200;
                 response.response = listaDTO;
@@ -93,27 +92,27 @@ namespace Ecommerce.Application.Services
             return response;
         }
 
-        public async Task<ResponseModel> GetByKey(string clave)
+        public async Task<ResponseModel> GetById(int id)
         {
             ResponseModel response = new ResponseModel();
 
             try
             {
-                Parametro parametro = await _parametroQuery.GetByKey(clave);
+                Direccion direccion = await _direccionQuery.GetById(id);
 
-                if (parametro == null)
+                if (direccion == null)
                 {
                     response.statusCode = 404;
-                    response.message = "El parametro seleccionado no existe";
+                    response.message = "La direccion seleccionada no existe";
                     response.response = null;
                     return response;
                 }
 
-                ParametroResponse parametroResponse = _mapper.Map<ParametroResponse>(parametro);
+                DireccionResponse direccionResponse = _mapper.Map<DireccionResponse>(direccion);
 
                 response.message = "Consulta realizada correctamente";
                 response.statusCode = 200;
-                response.response = parametroResponse;
+                response.response = direccionResponse;
             }
             catch (Exception ex)
             {
@@ -126,18 +125,18 @@ namespace Ecommerce.Application.Services
             return response;
         }
 
-        public async Task<ResponseModel> Insert(ParametroRequest element)
+        public async Task<ResponseModel> Insert(DireccionRequest element)
         {
 
             ResponseModel response = new ResponseModel();
-            ParametroResponse parametroResponse = new ParametroResponse();
+            DireccionResponse direccionResponse = new DireccionResponse();
             try
             {
-                Parametro parametro = _mapper.Map<Parametro>(element);
-                parametro = await _parametroCommand.Insert(parametro);
-                parametroResponse = _mapper.Map<ParametroResponse>(parametro);
+                Direccion direccion = _mapper.Map<Direccion>(element);
+                direccion = await _direccionCommand.Insert(direccion);
+                direccionResponse = _mapper.Map<DireccionResponse>(direccion);
 
-                _logger.LogInformation("Se insertó un nuevo parametro: " + parametro.Id + ". Clave: " + parametro.Clave + ", Valor: " + parametro.Valor);
+                _logger.LogInformation("Se insertó una nueva direccion: " + JsonSerializer.Serialize(direccion));
             }
             catch (Exception ex)
             {
@@ -149,36 +148,42 @@ namespace Ecommerce.Application.Services
             }
 
             response.statusCode = 201;
-            response.message = "Parametro insertado exitosamente";
-            response.response = parametroResponse;
+            response.message = "Direccion insertada exitosamente";
+            response.response = direccionResponse;
             return response;
         }
 
-        public async Task<ResponseModel> Update(ParametroRequest element)
+        public async Task<ResponseModel> Update(DireccionRequest element)
         {
             ResponseModel response = new ResponseModel();
-            ParametroResponse parametroResponse = new ParametroResponse();
+            DireccionResponse direccionResponse = new DireccionResponse();
             try
             {
-                var parametro = await _parametroQuery.GetByKey(element.Clave);
-                string parametroOld = JsonSerializer.Serialize(parametro);
+                var direccion = await _direccionQuery.GetById(element.Id);
+                object direccionOld = JsonSerializer.Serialize(direccion);
 
-
-                if (parametro == null)
+                if (direccion == null)
                 {
                     response.statusCode = 404;
-                    response.message = "El parametro seleccionado no existe";
+                    response.message = "La direccion seleccionada no existe";
                     response.response = null;
                     return response;
                 }
 
-                parametro.Clave = element.Clave;
-                parametro.Valor = element.Valor;
+                direccion.Calle = element.Calle;
+                direccion.Numero = element.Numero;
+                direccion.Piso = element.Piso;
+                direccion.Departamento = element.Departamento;
+                direccion.Provincia = element.Provincia;
+                direccion.Localidad = element.Localidad;
+                direccion.Municipio = element.Municipio;
+                direccion.Observaciones = element.Observaciones;
+                direccion.Habilitado = element.Habilitado;
 
-                await _parametroCommand.Update(parametro);
-                parametroResponse = _mapper.Map<ParametroResponse>(parametro);
+                await _direccionCommand.Update(direccion);
+                direccionResponse = _mapper.Map<DireccionResponse>(direccion);
 
-                _logger.LogInformation("Se actualizó el parametro: " + parametro.Id + ". Anterior: " + parametroOld + ". Actual: " + JsonSerializer.Serialize(parametro));
+                _logger.LogInformation("Se actualizó la direccion: " + direccion.Id + ". Antes: " + direccionOld + ". Despues: " + JsonSerializer.Serialize(direccion));
             }
             catch (Exception ex)
             {
@@ -190,8 +195,8 @@ namespace Ecommerce.Application.Services
             }
 
             response.statusCode = 200;
-            response.message = "Parametro actualizado exitosamente";
-            response.response = parametroResponse;
+            response.message = "Direccion actualizada exitosamente";
+            response.response = direccionResponse;
             return response;
         }
     }

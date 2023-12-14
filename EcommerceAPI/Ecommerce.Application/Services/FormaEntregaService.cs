@@ -5,6 +5,7 @@ using Ecommerce.Application.Interfaces.IServices;
 using Ecommerce.Application.Models;
 using Ecommerce.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Ecommerce.Application.Services
 {
@@ -160,6 +161,8 @@ namespace Ecommerce.Application.Services
             try
             {
                 var formaDeEntrega = await _formaDeEntregaQuery.GetById(element.Id);
+                string formaDeEntregaOld = JsonSerializer.Serialize(formaDeEntrega);
+
 
                 if (formaDeEntrega == null)
                 {
@@ -174,7 +177,7 @@ namespace Ecommerce.Application.Services
                 await _formaDeEntregaCommand.Update(formaDeEntrega);
                 formaDeEntregaResponse = _mapper.Map<FormaEntregaResponse>(formaDeEntrega);
 
-                _logger.LogInformation("Se actualizó la forma de entrega: " + formaDeEntrega.Id + ". Nombre anterior: " + formaDeEntrega.Descripcion + ". Nombre actual: " + element.Descripcion);
+                _logger.LogInformation("Se actualizó la forma de entrega: " + formaDeEntrega.Id + ". Anterior: " + formaDeEntregaOld + ". Actual: " + JsonSerializer.Serialize(formaDeEntrega));
             }
             catch (Exception ex)
             {

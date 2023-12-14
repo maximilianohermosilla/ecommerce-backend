@@ -5,6 +5,7 @@ using Ecommerce.Application.Interfaces.IServices;
 using Ecommerce.Application.Models;
 using Ecommerce.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Ecommerce.Application.Services
 {
@@ -160,6 +161,7 @@ namespace Ecommerce.Application.Services
             try
             {
                 var estado = await _estadoQuery.GetById(element.Id);
+                string estadoOld = JsonSerializer.Serialize(estado);
 
                 if (estado == null)
                 {
@@ -174,7 +176,7 @@ namespace Ecommerce.Application.Services
                 await _estadoCommand.Update(estado);
                 estadoResponse = _mapper.Map<EstadoResponse>(estado);
 
-                _logger.LogInformation("Se actualizó el estado: " + estado.Id + ". Nombre anterior: " + estado.Descripcion + ". Nombre actual: " + element.Descripcion);
+                _logger.LogInformation("Se actualizó el estado: " + estado.Id + ". Anterior: " + estadoOld + ". Nombre actual: " + JsonSerializer.Serialize(estado));
             }
             catch (Exception ex)
             {

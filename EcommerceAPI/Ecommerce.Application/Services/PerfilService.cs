@@ -5,6 +5,7 @@ using Ecommerce.Application.Interfaces.IServices;
 using Ecommerce.Application.Models;
 using Ecommerce.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Ecommerce.Application.Services
 {
@@ -160,6 +161,7 @@ namespace Ecommerce.Application.Services
             try
             {
                 var perfil = await _perfilQuery.GetById(element.Id);
+                string perfilOld = JsonSerializer.Serialize(perfil);
 
                 if (perfil == null)
                 {
@@ -175,7 +177,7 @@ namespace Ecommerce.Application.Services
                 await _perfilCommand.Update(perfil);
                 perfilResponse = _mapper.Map<PerfilResponse>(perfil);
 
-                _logger.LogInformation("Se actualizó el perfil: " + perfil.Id + ". Nombre anterior: " + perfil.Descripcion + ". Nombre actual: " + element.Descripcion);
+                _logger.LogInformation("Se actualizó el perfil: " + perfil.Id + ". Anterior: " + perfilOld + ". Actual: " + JsonSerializer.Serialize(perfil));
             }
             catch (Exception ex)
             {
